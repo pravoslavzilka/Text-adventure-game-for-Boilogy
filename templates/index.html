@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- META DATA -->
+    <meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="mobile-web-app-capable" content="yes">
+
+    <title>Bio game</title>
+
+    <!-- STYLESHEET -->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+
+    <!-- JS -->
+    <script type="text/javascript" src="{{ url_for('static', filename='game.js') }}"></script>
+
+</head>
+
+<body>
+  <div class="container">
+    <div id="text">Text</div>
+    <div id="option-buttons" class="btn-grid">
+      <button class="btn">Option 1</button>
+      <button class="btn">Option 2</button>
+      <button class="btn">Option 3</button>
+      <button class="btn">Option 4</button>
+    </div>
+  </div>
+</body>
+
+<script>
+
+    const element = document.getElementById("text");
+    element.innerHTML = "New Heading";
+
+    const textElement = document.getElementById('text');
+    const optionButtonsElement = document.getElementById('option-buttons');
+
+    let state = {};
+
+
+    function startGame() {
+        state = {};
+        showTextNode(1);
+    }
+
+    function selectOption(option) {
+        const nextTextModeId = option.nextText;
+        if (nextTextModeId <= 0) {
+            return startGame();
+        }
+        state = Object.assign(state, option.setState);
+        showTextNode(nextTextModeId);
+    }
+
+    function showTextNode(textNodeIndex) {
+        const textNode = textNodes.find(textNode => textNode.id === textNodeIndex);
+        textElement.innerText = textNode.text;
+        while (optionButtonsElement.firstChild) {
+            optionButtonsElement.removeChild(optionButtonsElement.firstChild);
+        }
+        textNode.options.forEach(option => {
+            if (showOption(option)) {
+                const button = document.createElement('button');
+                button.innerText = option.text;
+                button.classList.add('btn');
+                button.addEventListener('click', () => selectOption(option));
+                optionButtonsElement.appendChild(button);
+            }
+        });
+    }
+
+    function showOption(option) {
+        return option.requiredState == null || option.requiredState(state);
+    }
+
+
+    const textNodes = [
+        {
+            id: 1,
+            text:"Si medúza Aequora victoria nachádzajúca sa na pobreží štátu Washington. Tvojou úolhou je prežť a v bezpečí sa rozmnožiť. Čo ideš urobiť ako prvé ?",
+            options: [
+                {
+                    text:"Vyhľadať potravu",
+                    setState: {meduzaFeed: true},
+                    nextText: 2
+                },
+                {
+                    text:"Rozmnožiť sa",
+                    nextText: 13
+                }
+            ],
+        },
+        {
+            id: 2,
+            text:"Akú potravu ideš hľadať ?",
+            options: [
+                {
+                    text: "Planktón",
+                    nextText:3,
+                    setState: {plankton:true}
+                },
+                {
+                    text: "Kraby",
+                    nextText:10
+                }
+            ],
+        },
+        {
+            id: 3,
+            text:"Planktónu je všade dosť a je to výhodná možnosť. Na dodanie dostatočne živín a energie treba prijať veľa planktónu, čo vyžaduje ďalšie hľadanie blízko hladiny, čo urobíš ?",
+            options: [
+                {
+                    text: "Ostať hľadať planktón",
+                    nextText:4,
+                    setState: {plankton:true}
+                },
+                {
+                    text: "Nájsť si bezpečné miesto pri dne",
+                    nextText:11
+                }
+            ],
+        },
+        {
+            id: 4,
+            text:"Planktón si našiel ale teraz čelíš ťažkej úlohe: priplával predátor, čo urobíš ?",
+            options: [
+                {
+                    text: "Popŕhliť ho",
+                    nextText:5,
+                    setState: {plankton:true}
+                },
+                {
+                    text: "Plávať ku pobrežiu",
+                    nextText:6
+                },
+                {
+                    text: "Plávať ku dnu",
+                    nextText:7
+                }
+            ],
+        },
+        {
+            id: 5,
+            text:"Aequora victoria je relatívne malá medúza s rozmerami 5-10 cm a hmotnosťou 50 g. Predátor ťa teda pohltil a tvoje pŕhlenie si ani nevšimol.",
+            options: [
+                {
+                    text:"Reštartovať hru",
+                    nextText: -1
+                }
+            ],
+        },
+        {
+            id: 6,
+            text:"Tvoja medúza bola vylovená Osamom Shimomuraom, ktorý si ťa vylovil kvôli vedeckému pozorovaniu svietiacich buniek v tvojom tele za čo dostane Nobelovú cenu za chémiu v roku 2008. Každopádne teba zabije.",
+            options: [
+                {
+                    text:"Reštartovať hru",
+                    nextText: -1
+                }
+            ],
+        },
+        {
+            id: 7,
+            text:"Predátora si striasol ale stálo ťa to veľa energie, potrebuješ ešte potravu, čo spravíš ?",
+            options: [
+                {
+                    text:"Hľadať planktón pri dne",
+                    nextText: 8
+                },
+                {
+                    text:"Skúsiť nájsť kraby",
+                    nextText: 10
+                }
+            ],
+        },
+        {
+            id: 8,
+            text:"Planktón si našiel a môžeš sa pokojne usadiť, kde ?",
+            options: [
+                {
+                    text:"Na pobreží",
+                    nextText: 6
+                },
+                {
+                    text:"Pri dne",
+                    nextText: 9
+                }
+            ],
+        },
+        {
+            id:9,
+            text:"Dobrá voľba, tu si v bezpečí a môžeš sa rozmnožiť. Larvy sa usadia na dne a postupným pučaním vzniknú nové jedince. Potom sa oddelia a prevrátia kedy im dorastú ramená a dospejú. Gratulujem nové jedince sú na svete a ty už si viac nepotrebný!",
+            options: [
+                {
+                    text:"Hrať ešte raz",
+                    nextText: -1
+                }
+            ],
+        },
+        {
+            id:10,
+            text:"Kraby nie sú moc výhra keďže tvoja medúza má 10 cm. To však neznamená že ostatné medúzi ich uloviť nevedia. Takto si premrhal energiu a vystavil si sa predátorom pri čom samotného kraba nemusíš ani nájsť.",
+            options: [
+                {
+                    text:"Hrať ešte raz",
+                    nextText: -1
+                }
+            ],
+        },
+        {
+            id:11,
+            text:"Rozmnožovanie bez takmer žiadnych živín a enrgie nie je najlepší nápad. Čo teraz ?",
+            options: [
+                {
+                    text:"Ísť sa rozmnožiť",
+                    nextText: 12
+                },
+                {
+                    text:"Vyhľadať potravu",
+                    nextText: 2
+                }
+            ],
+        },
+        {
+            id:12,
+            text:"Zomrel si pri rozmnožovaní následkom skolabovania. Nebol dobrý nápad rozmnožiť sa bez živín a energie. No čo už.",
+            options: [
+                {
+                    text:"Hrať znovu",
+                    nextText: -1
+                }
+            ],
+        },
+        {
+            id:13,
+            text:"Na rozmnoženie je príliš skoro, potrbuješ dostať živiny a energiu najskôr",
+            options: [
+                {
+                    text:"Nájsť potravu",
+                    nextText: 2
+                },
+                {
+                    text:"Ajtak sa rozmnožiť ",
+                    nextText: 12
+                }
+            ],
+        },
+
+    ];
+
+
+    startGame();
+</script>
+</html>
